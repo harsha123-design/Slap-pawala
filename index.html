@@ -1,0 +1,199 @@
+<!DOCTYPE html><html>
+<head>
+<title>Ultimate Slap Madness</title><style>
+
+body{
+margin:0;
+text-align:center;
+font-family:Arial;
+background:#fff3cd;
+overflow:hidden;
+}
+
+#gameArea{
+width:100vw;
+height:100vh;
+position:relative;
+background:#fff3cd;
+overflow:hidden;
+}
+
+#face{
+position:absolute;
+width:120px;
+cursor:pointer;
+transition:transform 0.1s;
+}
+
+#score,#timer,#highscore{
+font-size:22px;
+font-weight:bold;
+margin:5px;
+}
+
+#ui{
+position:absolute;
+top:10px;
+width:100%;
+}
+
+#gameOver{
+font-size:40px;
+color:red;
+display:none;
+}
+
+#restart{
+display:none;
+padding:10px 20px;
+font-size:18px;
+margin-top:10px;
+}
+
+#ouch{
+position:absolute;
+color:red;
+font-size:25px;
+font-weight:bold;
+display:none;
+}
+
+.explosion{
+position:absolute;
+font-size:35px;
+pointer-events:none;
+}
+
+</style></head><body><div id="gameArea"><div id="ui">
+<div id="timer">Time: 30</div>
+<div id="score">Score: 0</div>
+<div id="highscore">High Score: 0</div>
+</div><img id="face" src="pic.png">
+<div id="ouch">OUCH!</div><div id="gameOver">GAME OVER 😂</div>
+<button id="restart" onclick="location.reload()">Restart</button></div><audio id="slapSound" src="slap.mp3"></audio>
+
+<script>
+
+let face=document.getElementById("face")
+let scoreText=document.getElementById("score")
+let timerText=document.getElementById("timer")
+let highText=document.getElementById("highscore")
+let slap=document.getElementById("slapSound")
+let game=document.getElementById("gameArea")
+let ouch=document.getElementById("ouch")
+let over=document.getElementById("gameOver")
+let restart=document.getElementById("restart")
+
+let score=0
+let speed=700
+let time=30
+let playing=true
+
+let highscore=localStorage.getItem("highscore")||0
+highText.innerHTML="High Score: "+highscore
+
+function moveFace(){
+
+if(!playing)return
+
+let x=Math.random()*(window.innerWidth-120)
+let y=Math.random()*(window.innerHeight-150)
+
+face.style.left=x+"px"
+face.style.top=y+"px"
+
+}
+
+function explosion(x,y){
+
+let boom=document.createElement("div")
+boom.className="explosion"
+boom.innerHTML="💥"
+boom.style.left=x+"px"
+boom.style.top=y+"px"
+
+game.appendChild(boom)
+
+setTimeout(()=>{boom.remove()},300)
+
+}
+
+face.onclick=function(){
+
+if(!playing)return
+
+score++
+scoreText.innerHTML="Score: "+score
+
+slap.currentTime=0
+slap.play()
+
+let x=face.offsetLeft
+let y=face.offsetTop
+
+explosion(x,y)
+
+ouch.style.left=x+"px"
+ouch.style.top=y+"px"
+ouch.style.display="block"
+
+setTimeout(()=>{
+ouch.style.display="none"
+},300)
+
+face.style.transform="rotate(20deg)"
+
+setTimeout(()=>{
+face.style.transform="rotate(0deg)"
+},120)
+
+if(navigator.vibrate){
+navigator.vibrate(60)
+}
+
+if(score>highscore){
+highscore=score
+localStorage.setItem("highscore",highscore)
+highText.innerHTML="High Score: "+highscore
+}
+
+speed=speed*0.96
+
+}
+
+function gameLoop(){
+
+moveFace()
+
+if(playing){
+setTimeout(gameLoop,speed)
+}
+
+}
+
+function timer(){
+
+let t=setInterval(()=>{
+
+time--
+timerText.innerHTML="Time: "+time
+
+if(time<=0){
+
+playing=false
+clearInterval(t)
+
+over.style.display="block"
+restart.style.display="inline-block"
+
+}
+
+},1000)
+
+}
+
+gameLoop()
+timer()
+
+</script></body>
+</html>
