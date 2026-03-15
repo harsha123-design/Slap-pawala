@@ -1,13 +1,12 @@
 <!DOCTYPE html><html>
-<head>
-<title>Ultimate Slap Madness</title><style>
+<head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Ultimate Slap Madness</title><style>
 
 body{
 margin:0;
-text-align:center;
 font-family:Arial;
 background:#fff3cd;
 overflow:hidden;
+touch-action:manipulation;
 }
 
 #gameArea{
@@ -16,6 +15,7 @@ height:100vh;
 position:relative;
 background:#fff3cd;
 overflow:hidden;
+touch-action:none;
 }
 
 #face{
@@ -25,16 +25,17 @@ cursor:pointer;
 transition:transform 0.1s;
 }
 
-#score,#timer,#highscore{
-font-size:22px;
-font-weight:bold;
-margin:5px;
-}
-
 #ui{
 position:absolute;
 top:10px;
 width:100%;
+text-align:center;
+}
+
+#score,#timer,#highscore{
+font-size:22px;
+font-weight:bold;
+margin:5px;
 }
 
 #gameOver{
@@ -47,7 +48,6 @@ display:none;
 display:none;
 padding:10px 20px;
 font-size:18px;
-margin-top:10px;
 }
 
 #ouch{
@@ -60,7 +60,7 @@ display:none;
 
 .explosion{
 position:absolute;
-font-size:35px;
+font-size:40px;
 pointer-events:none;
 }
 
@@ -118,7 +118,7 @@ setTimeout(()=>{boom.remove()},300)
 
 }
 
-face.onclick=function(){
+function slapFace(){
 
 if(!playing)return
 
@@ -126,7 +126,7 @@ score++
 scoreText.innerHTML="Score: "+score
 
 slap.currentTime=0
-slap.play()
+slap.play().catch(()=>{})
 
 let x=face.offsetLeft
 let y=face.offsetTop
@@ -160,6 +160,8 @@ highText.innerHTML="High Score: "+highscore
 speed=speed*0.96
 
 }
+
+face.addEventListener("pointerdown",slapFace)
 
 function gameLoop(){
 
